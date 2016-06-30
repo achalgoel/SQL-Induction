@@ -157,9 +157,10 @@ ALTER TABLE
 		DOJ date;
 
 
-CREATE VIEW             /*CREATING VIEW*/
-	EmpView1
-AS
+CREATE                /*CREATING VIEW*/
+	VIEW          
+		EmpView1
+	AS
 		SELECT
 			*
 		FROM
@@ -186,6 +187,17 @@ SELECT
 FROM
 	Department
 
+	             
+
+
+
+
+            ---------------(30/06/1995)----------------
+
+
+
+
+
 
 
 SELECT Id,FirstName             --Union Operation
@@ -207,7 +219,7 @@ FROM
 	)
 	AS Table1
 
-ALTER TABLE   --adding column Department to Table Employee
+ALTER TABLE     --adding column Department to Table Employee
 	Employee
 	ADD
 		Department int;
@@ -273,7 +285,7 @@ WHERE
 					);
 
 
-SELECT        --Number of employees Department wise
+SELECT          --Number of employees Department wise
 	Department.DeprtmentName,
 	COUNT
 		(Employee.Department)
@@ -288,7 +300,7 @@ ON
 GROUP BY
 	Department.DeprtmentName; 
 
-SELECT        --employees having salary less than MAX
+SELECT          --employees having salary less than MAX
 	Employee.FirstName,
 	Employee.Salary
 FROM
@@ -302,8 +314,76 @@ WHERE
 							Employee
 						);
 
-SELECT      --UPPER lower cASE
+SELECT          --UPPER lower cASE
 	UPPER(FirstName),
 	LOWER(LastName)
 FROM
 	Employee;	
+
+SELECT          --LENGTH
+	Employee.FirstName,
+	Employee.LastName,
+	LEN	
+		(
+		Employee.FirstName + Employee.LastName
+		)
+		AS LengthOfName
+FROM
+Employee;
+
+SELECT          --using CONVERT for coverting Date Format
+	CONVERT(VARCHAR,DOJ,113)
+FROM
+	Employee
+
+SELECT          --case
+	Employee.FirstName,
+	CASE  
+	WHEN  
+		(Employee.Salary>50000) 
+		THEN 
+		'YES' 
+		ELSE 'NO' 
+		END as SalaryCheck
+FROM
+	Employee 
+
+
+SELECT          --RANKING--
+	Employee.FirstName, 
+	Employee.LastName ,
+	Salary 
+    ,ROW_NUMBER() OVER (ORDER BY Salary) AS "Row Number"  
+    ,RANK() OVER (ORDER BY Designation) AS Rank  
+    ,DENSE_RANK() OVER (ORDER BY Designation) AS "Dense Rank"  
+    ,NTILE(4) OVER (ORDER BY Designation) AS Quartile 
+FROM
+	Employee
+
+SELECT          --RANKING--
+	Employee.FirstName, 
+	Employee.LastName ,
+	Salary     
+FROM
+	Employee
+WHERE
+	(
+	SELECT 
+		ROW_NUMBER() OVER (ORDER BY Salary)
+	FROM
+		Employee  
+		AS
+			T1 
+	)
+		% 2 = 0 
+ORDER BY Salary;
+
+WITH EmpCTE(FirstName,Salary,Designation,Department)
+	AS
+	(
+	SELECT FirstName,Salary,Designation.Designation,Department.DeprtmentName FROM Employee, Department,Designation
+	WHERE
+		NOT Designation.Id =2
+	)
+SELECT FirstName,Salary,Designation,Department
+FROM EmpCTE;
