@@ -187,3 +187,123 @@ FROM
 	Department
 
 
+
+SELECT Id,FirstName             --Union Operation
+FROM EmployeeBackup	
+UNION
+SELECT Id,FirstName
+FROM Employee;
+
+SELECT                          --Date Operations
+*
+FROM
+	(
+	SELECT 
+	DATEADD(DAY,20,GETDATE())  --Date operation
+		AS dates
+	UNION
+	SELECT DATEADD(DAY,11,DOJ) 
+		FROM Employee
+	)
+	AS Table1
+
+ALTER TABLE   --adding column Department to Table Employee
+	Employee
+	ADD
+		Department int;
+
+SELECT          --Group By Statement
+	Department.DeprtmentName,
+	COUNT(Employee.Department)
+ 		AS
+			NumberOfEmployees,
+	SUM(Employee.Salary)
+		AS
+			TotalSalary
+FROM 
+	Employee
+LEFT JOIN
+	Department
+ON
+	Department.Id=Employee.Department
+GROUP BY
+	Department.DeprtmentName
+HAVING
+	SUM(Employee.Salary)>10000;    
+
+SELECT          --Group By (Gender based salary distribution)
+	Employee.Gender,
+	COUNT
+		(Employee.Gender)
+			AS 
+				NumberOfEmployees,
+	SUM
+		(Employee.Salary)
+			AS
+				TotalSalary,
+	AVG
+		(Employee.Salary)
+			AS
+				AverageSalary
+FROM 
+	Employee
+GROUP BY
+	Employee.Gender;
+ 
+SELECT          --Calculating Pf from salary upto 2 decimal places using FORMAT
+	FirstName,Designation,Department,
+	FORMAT
+		((Employee.Salary*0.1275),'N0') 
+		AS 
+			Pf 
+FROM
+	Employee;	
+
+
+SELECT          --Displaying salaries greater than average
+	Employee.FirstName,salary
+FROM
+	Employee
+WHERE
+	Employee.Salary>(
+					SELECT 
+						AVG(Employee.Salary)
+					FROM
+						Employee
+					);
+
+
+SELECT        --Number of employees Department wise
+	Department.DeprtmentName,
+	COUNT
+		(Employee.Department)
+		AS
+			NumberOfEmployees
+FROM
+	Employee
+LEFT JOIN
+	Department
+ON
+	Employee.Department=Department.Id
+GROUP BY
+	Department.DeprtmentName; 
+
+SELECT        --employees having salary less than MAX
+	Employee.FirstName,
+	Employee.Salary
+FROM
+	Employee
+WHERE
+	NOT Employee.Salary=(
+						SELECT
+							MAX
+								(Employee.Salary)
+						FROM
+							Employee
+						);
+
+SELECT      --UPPER lower cASE
+	UPPER(FirstName),
+	LOWER(LastName)
+FROM
+	Employee;	
