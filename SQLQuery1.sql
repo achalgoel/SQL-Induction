@@ -353,7 +353,7 @@ SELECT          --RANKING--
 	Employee.FirstName, 
 	Employee.LastName ,
 	Salary 
-    ,ROW_NUMBER() OVER (ORDER BY Salary) AS "Row Number"  
+    ,ROW_NUMBER() OVER (ORDER BY Designation) AS "Row Number"  
     ,RANK() OVER (ORDER BY Designation) AS Rank  
     ,DENSE_RANK() OVER (ORDER BY Designation) AS "Dense Rank"  
     ,NTILE(4) OVER (ORDER BY Designation) AS Quartile 
@@ -378,12 +378,157 @@ WHERE
 		% 2 = 0 
 ORDER BY Salary;
 
-WITH EmpCTE(FirstName,Salary,Designation,Department)
+
+                          
+
+WITH   --CTE--
+	EmpCTE(FirstName,Salary,Designation)
 	AS
 	(
-	SELECT FirstName,Salary,Designation.Designation,Department.DeprtmentName FROM Employee, Department,Designation
+	SELECT FirstName,Salary,Designation.Designation
+	 FROM Employee, Designation
 	WHERE
-		NOT Designation.Id =2
+		Employee.Designation=Designation.Id
 	)
-SELECT FirstName,Salary,Designation,Department
+SELECT Salary,Designation
 FROM EmpCTE;
+
+                            --(01/07/2016)--
+
+SELECT          --EXCEPT--
+	*
+FROM
+	Employee
+EXCEPT
+SELECT	
+	*
+FROM 
+	Employee
+WHERE
+	Employee.Id IN ('2','6','8');
+
+
+
+SELECT          --INTERSECT--
+	*
+FROM
+	Employee
+WHERE
+	Employee.Salary >50000
+INTERSECT
+SELECT	
+	*
+FROM 
+	Employee
+WHERE
+	NOT Employee.Id IN ('2','6','8');
+
+
+SELECT
+	*
+FROM
+	Employee
+WHERE
+	Employee.Designation IN
+					(
+					SELECT
+						Designation.Id
+					FROM
+						Designation
+					WHERE
+						Designation.Designation 
+						IN
+							('Coder','CEO')				
+					);       --Correlated Subqueries--
+
+
+
+CREATE CLUSTERED INDEX --Clustered Index--
+	EmpIndexSalary
+ON
+	Employee(Gender ASC,Salary DESC);
+
+SELECT
+	*
+FROM
+	Employee;
+
+CREATE NONCLUSTERED INDEX     --NON Clustered Index--
+	EmpIndexId
+ON
+	Employee(Id ASC);
+
+
+
+
+
+
+
+
+
+
+
+ALTER PROCEDURE            
+	spGetEmployeesById
+		@Id int
+		WITH ENCRYPTION
+	AS
+	BEGIN
+		SELECT
+			*
+		FROM
+			Employee
+		WHERE
+			Employee.Id=@Id
+	END;
+
+
+
+
+CREATE PROC              /*Stored Procedure Using input & output variables*/
+	spGetSlaryById
+	@Id int,
+	@EmpSalary int OUTPUT
+	AS
+		BEGIN
+				SELECT 
+					@EmpSalary = Salary 
+				FROM 
+					Employee 
+				WHERE 
+					Employee.Id=@Id
+	END
+
+DECLARE @EmpSal int
+EXECUTE spGetSlaryById 2, @EmpSal OUT
+PRINT  'salary :'
+PRINT @EmpSal
+	
+
+
+CREATE PROC              /*Stored Procedure Using return variables*/
+	spGetSlaryById2
+	@Id int,
+
+	AS
+		BEGIN
+		RETURN(
+				SELECT 		
+					Salary 
+				FROM 
+					Employee 
+				WHERE 
+					Employee.Id=@Id
+				)
+	END
+
+DECLARE @EmpSal int
+EXECUTE spGetSlaryById 5, @EmpSal OUT
+PRINT  'salary of Employee :'
+
+PRINT @EmpSal
+
+
+
+
+
