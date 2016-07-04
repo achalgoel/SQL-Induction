@@ -90,7 +90,7 @@ GROUP BY
 	Department.DeptName,
 	Employee.Gender;
 
-									--QUERY 2--
+							--QUERY 2--
 
 SELECT
 	Department.DeptName,
@@ -125,15 +125,16 @@ GROUP BY
 						--	QUERY 3  --
 
 SELECT
+	Department.DeptName,
 	MAX
 	(Employee.Name)
 		AS
-		EmployeeName,
+		NameOfEmployee,
 	MAX
 	(Employee.BasicSalary+Employee.HR+Employee.DA)
 		AS
-		GrossSalary,
-	Department.DeptName
+		HighestGrossSalary
+	
 FROM
 	Employee
 INNER JOIN
@@ -142,3 +143,159 @@ ON
 	Employee.DeptId=Department.DeptId
 GROUP BY
 	Department.DeptName;
+
+                          --QUERY 4--
+
+SELECT	
+	Id,
+	Name,
+	(BasicSalary+HR+DA)
+		AS
+		GrossSalary
+FROM
+	Employee
+WHERE
+	(BasicSalary+HR+DA)>15000;
+	
+	                     --QUERY 5--
+
+
+SELECT
+	TOP 1
+	Id,
+	Name
+FROM
+	Employee
+WHERE
+	BasicSalary=
+			(
+			SELECT 
+				MIN(BasicSalary)
+			FROM 
+				(
+				SELECT DISTINCT
+				TOP 2 
+					BasicSalary
+				FROM
+					Employee
+				ORDER BY
+					BasicSalary DESC
+				)
+				AS
+					BS
+			)	
+
+						   --QUERY 6--
+
+SELECT
+	Department.DeptName,
+	COUNT	
+		(Employee.Id)
+		AS
+		NoOfEmployee
+FROM
+	Employee
+INNER JOIN
+	Department
+ON
+	Employee.DeptId=Department.DeptId
+GROUP BY
+	Department.DeptName
+HAVING
+	COUNT(Employee.Id)>3;
+
+						--QUERY 7--
+
+SELECT
+	Department.DeptName,
+	Employee.Name
+	AS
+		DepartmentHeadName
+FROM
+	Department
+INNER JOIN
+	Employee
+ON
+	Employee.Id=Department.DeptHeadId;
+	 
+						--QUERY 8--
+
+SELECT
+	Name
+FROM
+	Employee
+WHERE
+	(
+	NOT Employee.Id IN (
+				SELECT 
+					EmployeeAttendance.EmpId
+				FROM
+					EmployeeAttendance
+				WHERE
+					NOT WorkingDays=PresentDays
+					)
+	);
+
+						--QUERY 9--
+
+
+SELECT
+	Employee.Name
+FROM(
+	SELECT 
+		EmpId,
+		SUM(EmployeeAttendance.PresentDays)
+		AS
+		DaysPresent
+		FROM
+			EmployeeAttendance
+		GROUP BY
+			EmpId
+		HAVING
+		SUM(EmployeeAttendance.PresentDays)=
+		(
+		SELECT 
+		MIN(Present)
+			AS
+			Minattendance
+		FROM
+						(
+						SELECT
+							EmpId,
+							SUM(EmployeeAttendance.PresentDays)
+								AS
+								Present
+						FROM
+							EmployeeAttendance
+						GROUP BY
+							EmpId
+						)
+						AS
+							T1
+		
+		 )
+		 )	
+		 AS
+		 T2
+	INNER JOIN
+	Employee
+	ON
+	Employee.Id=T2.EmpId;
+
+						--QUERY 10--
+
+SELECT
+	Name
+FROM
+	Employee
+WHERE
+	(
+	NOT Employee.Id IN (
+				SELECT 
+					EmployeeAttendance.EmpId
+				FROM
+					EmployeeAttendance
+				WHERE
+					NOT WorkingDays-3>PresentDays
+					)
+	);
