@@ -1,4 +1,4 @@
-CREATE TABLE
+CREATE TABLE           --Creating table Employee--
 	Employee
 		(
 		Id smallint PRIMARY KEY,
@@ -22,7 +22,7 @@ SELECT
 FROM
 	Employee
 
-CREATE TABLE
+CREATE TABLE            --Creating table Department--
 	Department
 		(
 		DeptId smallint PRIMARY KEY,
@@ -42,7 +42,7 @@ SELECT
 FROM
 	Department;
 
-CREATE TABLE
+CREATE TABLE          ----Creating table EmployeeAttendance----
 	EmployeeAttendance
 		(
 		EmpId smallint,
@@ -61,7 +61,84 @@ SELECT
 FROM
 	EmployeeAttendance;
 
-ALTER TABLE
+
+DELETE FROM	
 	EmployeeAttendance
-	MODIFY COLUMN
-		EmpId smallint;
+WHERE
+	EmpId>=3;
+
+                             -- QUERY 1 --
+
+SELECT         /*Inner join*/
+	 Department.DeptName,
+	 Employee.Gender,
+	 COUNT	
+		(
+		Employee.Id
+		)
+		AS
+		NoOfEmployees
+FROM
+(
+	Employee
+INNER JOIN
+	Department
+ON 
+	Employee.DeptId = Department.DeptId
+)
+GROUP BY 
+	Department.DeptName,
+	Employee.Gender;
+
+									--QUERY 2--
+
+SELECT
+	Department.DeptName,
+	COUNT	
+		(
+		Employee.Id
+		)
+		AS
+			NoOfEmployee,
+	MAX
+		(
+			Employee.BasicSalary + Employee.HR + Employee.DA
+	
+		)
+	AS
+		HighestGrossSalary,
+	SUM
+		(
+		Employee.BasicSalary + Employee.HR + Employee.DA - Employee.TAX
+		)
+	AS
+		TotalSalary
+FROM
+	Employee
+INNER JOIN
+	Department
+ON 
+	Employee.DeptId=Department.DeptId
+GROUP BY
+	Department.DeptName;
+
+						--	QUERY 3  --
+
+SELECT
+	MAX
+	(Employee.Name)
+		AS
+		EmployeeName,
+	MAX
+	(Employee.BasicSalary+Employee.HR+Employee.DA)
+		AS
+		GrossSalary,
+	Department.DeptName
+FROM
+	Employee
+INNER JOIN
+	Department
+ON
+	Employee.DeptId=Department.DeptId
+GROUP BY
+	Department.DeptName;
