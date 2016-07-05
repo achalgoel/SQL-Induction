@@ -27,13 +27,12 @@ CREATE TABLE           --Creating table transaction--
 
 						
 						
-						     --TEMPORARY TABLES--
+				      --TEMPORARY TABLES--
 
 
 
 
-						 --TEmp table  #t_amount_paid
-
+				 --Temp table  #t_amount_paid
 
 SELECT                             
 	t_transaction.Users_ID,
@@ -50,7 +49,6 @@ WHERE
 GROUP BY
 	t_transaction.Users_ID,
 	t_transaction.Product_ID;
-
 
 SELECT *
 FROM #t_amount_paid;
@@ -79,7 +77,7 @@ SELECT *
 FROM #t_order
 
 
-                         --Temp table  #t_total_amount
+                         --Temp table  #t_total_amount 
 
 SELECT
 	#t_order.Users_ID,
@@ -102,7 +100,8 @@ GROUP BY
 SELECT *
 FROM #t_total_amount
 
-                        --Temp table  #t_balance
+
+                        --Temp table  #t_balance (Total Amount - Amount Paid)
 SELECT
 	#t_total_amount.Users_ID,
 	#t_total_amount.Product_ID,
@@ -125,8 +124,8 @@ ON
 SELECT *
 FROM #t_balance
 
-	               -- Temp table last transaction date
 
+	               -- Temp table last transaction date
 
 SELECT	                
 	t_transaction.Users_ID,
@@ -141,7 +140,7 @@ FROM
 GROUP BY
 	Users_ID,
 	Product_ID;
---DROP TABLE #t_last_transaction_date
+
 
 
 	
